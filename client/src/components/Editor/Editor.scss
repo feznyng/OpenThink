@@ -1,0 +1,35 @@
+.wiki-editor {
+  ul {
+    padding-left: 0px
+  }
+  ol {
+    padding-left: 0px
+  }
+  
+  li { 
+    margin-left: 1em; 
+  }
+  
+  
+  .my-custom-class {
+    border-radius: 20px;
+    color: red;
+  }
+  
+  .ProseMirror .is-empty::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+  
+  hr.ProseMirror-selectednode {
+    border-top: 2px solid #2196f3
+  }
+  
+  .ProseMirror {
+    padding-left: 75px;
+    padding-right: 75px;
+  }
+}

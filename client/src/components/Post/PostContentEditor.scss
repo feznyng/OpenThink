@@ -1,0 +1,85 @@
+  /* Placeholder (at the top) */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #A1A1A1;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+
+.post-content {
+  /* Basic editor styles */
+  .ProseMirror {
+    > * + * {
+      margin-top: 0.75em;
+    }
+  }
+
+
+  p {
+    font-size: 1em;
+  }
+
+  mark {
+  background-color: #ffe066;
+  box-decoration-break: clone;
+  padding: 0;
+  }
+}
+
+.wiki-editor {
+
+  /* Give a remote user a caret */
+  .collaboration-cursor__caret {
+    border-left: 1px solid #0d0d0d;
+    border-right: 1px solid #0d0d0d;
+    margin-left: -1px;
+    margin-right: -1px;
+    pointer-events: none;
+    position: relative;
+    word-break: normal;
+  }
+
+  /* Render the username above the caret */
+  .collaboration-cursor__label {
+    border-radius: 3px 3px 3px 0;
+    color: #0d0d0d;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    left: -1px;
+    line-height: normal;
+    padding: 0.1rem 0.3rem;
+    position: absolute;
+    top: -1.4em;
+    user-select: none;
+    white-space: nowrap;
+  }
+  ul {
+    padding-left: 0px
+  }
+  ol {
+    padding-left: 0px
+  }
+  
+  li { 
+    margin-left: 1em; 
+  }
+  .ProseMirror .is-empty::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+  
+  hr.ProseMirror-selectednode {
+    border-top: 2px solid #2196f3
+  }
+  
+  .ProseMirror {
+    padding-left: 75px;
+    padding-right: 75px;
+  }
+}

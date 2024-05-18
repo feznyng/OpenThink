@@ -1,0 +1,2036 @@
+"Represents a schema"
+schema {
+  query: RootQueryType
+  mutation: RootMutationType
+  subscription: RootSubscriptionType
+}
+
+type PostTagConnection {
+  pageInfo: PageInfo!
+  edges: [PostTagEdge]
+}
+
+type MessageReplyEdge {
+  messageEdge: MessageEdge
+}
+
+input ImportPostFileInput {
+  spaceId: Int!
+  file: Upload!
+  postId: Int
+}
+
+input UserDmSubInput {
+  userId: Int
+  clientId: String
+}
+
+input MentionInput {
+  url: String!
+  name: String
+  type: String
+  fileSize: Int
+}
+
+input SetLastRoomIdInput {
+  roomId: ID!
+  spaceId: ID
+}
+
+input CreateSpaceInput {
+  parentSpaceId: Int
+  project: Boolean
+  projectType: String
+  accessType: String!
+  type: String!
+  name: String!
+  description: String
+  spaceType: String
+  address: String
+  latitude: Decimal
+  profilepic: String
+  bannerpic: String
+  longitude: Decimal
+  causes: [String]
+  inviteAllSpaceMembers: Boolean
+  invitedUserIds: [Int]
+  invitedGroupIds: [Int]
+  invitedRoleIds: [Int]
+  emails: [String]
+  createdFromPostId: Int
+}
+
+input ArchiveSpaceInput {
+  spaceId: Int
+}
+
+input UpdateSpaceInput {
+  projectType: String
+  spaceType: String
+  accessType: String
+  type: String
+  name: String
+  description: String
+  spaceId: Int!
+  address: String
+  latitude: Decimal
+  longitude: Decimal
+  profilepic: String
+  defaultBanner: String
+  bannerpic: String
+  rules: [RuleInput]
+}
+
+input UpdateSpaceUserInput {
+  spaceUserId: Int!
+  type: String
+  accepted: Boolean
+  request: Boolean
+  requestType: String
+}
+
+input LeaveSpaceUserInput {
+  spaceUserId: Int!
+}
+
+type Topic implements Node {
+  "The ID of an object"
+  id: ID!
+
+  value: String
+}
+
+type RootSubscriptionType {
+  "Sync messages up with the the room"
+  roomMessages(input: MessageSubInput!): MessageSubReply
+
+  "Sync channels up with the the space"
+  spaceChannels(input: ChannelSubInput!): ChannelSubReply
+
+  "Sync channels up with the the space"
+  directMessages(input: UserDmSubInput!): ChannelSubReply
+
+  "Sync new notifications"
+  newNotification(input: NewNotificationsSubInput!): NotificationEdgeOutput
+}
+
+type RoomEdgeEdge {
+  roomEdge: RoomEdge
+}
+
+input FileInput {
+  title: String!
+  link: String!
+  format: String!
+  type: String!
+  size: Int
+  id: String
+  postId: Int
+  description: String
+}
+
+input DeleteReactionInput {
+  reactionId: Int!
+}
+
+input DeleteRelationInput {
+  relationId: Int
+}
+
+input MessageSubInput {
+  roomId: Int
+  postId: Int
+  clientId: String
+}
+
+input RuleInput {
+  name: String
+  description: String
+}
+
+type Reaction implements Node {
+  "The ID of an object"
+  id: ID!
+
+  emoji: String
+
+  unified: String
+
+  createdBy: Int
+
+  reactionId: Int
+
+  messageId: Int
+
+  postId: Int
+
+  spaceId: Int
+
+  name: String
+
+  count: Int
+
+  users(after: String, first: Int, before: String, last: Int): UserConnection
+}
+
+type ChannelSubReply {
+  roomEdge: RoomEdge
+  deletedRoomId: ID
+  room: Room
+  clientId: String
+}
+
+type SpaceTagEdge {
+  node: SpaceTag
+  cursor: String
+}
+
+type RoomUserEdge {
+  node: RoomUser
+  cursor: String
+}
+
+type SkillEdge {
+  node: Skill
+  cursor: String
+}
+
+type StringEdge {
+  node: String
+  cursor: String
+}
+
+input AttributeInput {
+  attributeId: Int
+  postId: Int
+  index: Int
+  name: String
+  type: String
+  options: [Option]
+  description: String
+}
+
+type NotificationEdgeOutput {
+  edge: NotificationEdge
+}
+
+input CurrentPageInput {
+  currentPage: String
+}
+
+type SpacePost implements Node {
+  "The ID of an object"
+  id: ID!
+
+  deleted: Boolean
+
+  pinned: Boolean
+
+  wiki: Boolean
+
+  index: Int
+
+  completed: Boolean
+
+  spaceId: Int
+
+  startDate: String
+
+  endDate: String
+
+  type: String
+
+  boardId: Int
+
+  hidden: Boolean
+
+  space: Space
+
+  sectionId: Int
+
+  post: Post
+
+  spacePostId: Int
+}
+
+type Info {
+  taskInfo: TaskInfo
+}
+
+interface ImageItem {
+  profilepic: String
+  bannerpic: String
+  defaultBanner: String
+}
+
+type View implements Node {
+  "The ID of an object"
+  id: ID!
+
+  viewId: Int
+
+  name: String
+
+  entryIds: [Int!]!
+
+  groupIds: [String!]!
+
+  postId: Int
+
+  spaceId: Int
+
+  purpose: String
+
+  hideLabels: Boolean
+
+  attributeRenderingMethod: String
+
+  filters: [Filter]
+
+  sorts: [Sort]
+}
+
+type PostVote implements Node {
+  "The ID of an object"
+  id: ID!
+
+  postVoteId: Int
+
+  postId: Int
+
+  upvote: Boolean
+
+  vote: Int
+
+  spaceId: Int
+
+  userId: Int
+}
+
+type NotificationEdge {
+  node: Notification
+  cursor: String
+}
+
+input RsvpPostInput {
+  postId: Int!
+  type: String!
+}
+
+input ChangePrefsInput {
+  darkMode: Boolean
+  productivityView: Boolean
+}
+
+input ReorderGroupInput {
+  viewId: Int!
+  groupId: String!
+  index: Int
+}
+
+input RemoveGroupInput {
+  viewId: Int!
+  groupId: String!
+}
+
+type User implements ImageItem & Node {
+  "The ID of an object"
+  id: ID!
+
+  userId: Int!
+
+  firstname: String
+
+  lastname: String
+
+  email: String
+
+  profilepic: String
+
+  admin: Boolean
+
+  bannerpic: String
+
+  phonenumber: Int
+
+  address: String
+
+  city: Boolean
+
+  state: Boolean
+
+  longitude: Float
+
+  latitude: Float
+
+  currentPage: String
+
+  profession: String
+
+  pronouns: String
+
+  bio: String
+
+  createdAt: String
+
+  updatedAt: String
+
+  birthdate: String
+
+  unreadMessages: Boolean
+
+  unreadMessagesNum: Int
+
+  notificationsNum(read: Boolean): Int
+
+  unreadDirectMessages: Boolean
+
+  unreadDirectMessagesNum: Int
+
+  googleId: String
+
+  defaultBanner: String
+
+  spaceUserId: Int
+
+  type: String
+
+  darkMode: Boolean
+
+  productivityView: Boolean
+
+  lastRoomId: Int
+
+  connection: Connection
+
+  notifications(after: String, first: Int, before: String, last: Int, read: Boolean, type: String): NotificationConnection
+
+  spaceUser: SpaceUser
+
+  postUser: PostUser
+
+  active: Boolean
+
+  interests(after: String, first: Int, before: String, last: Int): TopicConnection
+
+  skills(after: String, first: Int, before: String, last: Int): SkillConnection
+
+  spaces(after: String, first: Int, before: String, last: Int, sortBy: String, filters: SpaceFilters): SpaceConnection
+
+  directMessages(after: String, first: Int, before: String, last: Int): RoomConnection
+
+  posts(
+    after: String, first: Int, before: String, last: Int, filterTypes: [String], includeAssigned: Boolean, sortBy: String
+  ): PostConnection
+
+  favorites(after: String, first: Int, before: String, last: Int, type: String): FavoriteConnection
+
+  connections(after: String, first: Int, before: String, last: Int, excludeSpaceId: Int, excludeRequested: Boolean): UserConnection
+
+  searchConnections(
+    after: String, first: Int, before: String, last: Int, query: String!, excludeSpaceId: Int, excludeRequested: Boolean
+  ): UserConnection
+}
+
+type Filter {
+  attributeId: Int
+  type: String
+  textValue: String
+  multiTextValue: [String]
+  numberValue: String
+  startDateValue: DateTime
+  endDateValue: DateTime
+  boolValue: Boolean
+  filterGroupId: Int
+}
+
+type PageInfo {
+  "When paginating backwards, are there more items?"
+  hasPreviousPage: Boolean!
+
+  "When paginating forwards, are there more items?"
+  hasNextPage: Boolean!
+
+  "When paginating backwards, the cursor to continue."
+  startCursor: String
+
+  "When paginating forwards, the cursor to continue."
+  endCursor: String
+}
+
+type ReactionConnection {
+  pageInfo: PageInfo!
+  edges: [ReactionEdge]
+}
+
+type UserConnection {
+  pageInfo: PageInfo!
+  edges: [UserEdge]
+}
+
+interface SectionItem {
+  sections: PostConnection
+}
+
+type UserTag implements Node {
+  "The ID of an object"
+  id: ID!
+
+  userId: Int
+
+  userTagId: Int
+
+  tag: String
+}
+
+type MessageDeleteEdge {
+  deletedMessageId: ID
+  message: Message
+  roomId: ID
+}
+
+type RoomEdge {
+  node: Room
+  cursor: String
+}
+
+type FavoriteEdge {
+  node: Favorite
+  cursor: String
+}
+
+type TopicEdge {
+  node: Topic
+  cursor: String
+}
+
+type PostEdge {
+  node: Post
+  cursor: String
+}
+
+input ReorderSpacePostInput {
+  spaceId: Int!
+  postId: Int!
+  type: String!
+  oldIndex: Int!
+  newIndex: Int!
+}
+
+type ViewEdgeOutput {
+  view: ViewEdge
+}
+
+type ReadRoomOutput {
+  roomUser: RoomUser
+  user: User
+  spaceUser: SpaceUser
+}
+
+input SpaceFilters {
+  query: String
+  visibility: [String]
+  access: [String]
+  causes: [String]
+  parentSpaceId: Int
+  project: Boolean
+  memberOf: Boolean
+  hasLocation: Boolean
+  accepted: Boolean
+  excludeChildren: Boolean
+}
+
+type SpaceUser implements Node {
+  "The ID of an object"
+  id: ID!
+
+  spaceUserId: ID
+
+  spaceId: ID!
+
+  userId: Int!
+
+  requestType: String
+
+  accepted: Boolean
+
+  request: Boolean
+
+  type: String
+
+  index: Int
+
+  roles: [Role]
+
+  lastRoomId: Int
+
+  unreadMessagesNum: Int
+
+  unreadMessages: Boolean
+
+  user: User
+
+  space: Space
+}
+
+type PostRelation implements Node {
+  "The ID of an object"
+  id: ID!
+
+  post1Id: Int
+
+  post2Id: Int
+
+  spaceId: Int
+
+  index: Int
+
+  pinned: Boolean
+
+  relationId: Int
+
+  createdAt: DateTime
+
+  userId: Int
+}
+
+type PostRelationConnection {
+  pageInfo: PageInfo!
+  edges: [PostRelationEdge]
+}
+
+type RoomUpdateReply {
+  room: Room
+}
+
+type Auth {
+  token: String
+}
+
+interface Node {
+  "The ID of the object."
+  id: ID!
+}
+
+type AttributeValue implements Node {
+  "The ID of an object"
+  id: ID!
+
+  attributeId: Int
+
+  postId: Int
+
+  createdAt: String
+
+  createdBy: Int
+
+  attributeValueId: Int
+
+  textValue: String
+
+  multiTextValue: [String]
+
+  numberValue: String
+
+  dateValue: DateTime
+
+  boolValue: Boolean
+}
+
+type Message implements Node {
+  "The ID of an object"
+  id: ID!
+
+  messageId: ID!
+
+  createdBy: ID
+
+  body: String
+
+  roomId: Int
+
+  postId: Int
+
+  edited: Boolean
+
+  room: Room
+
+  pinned: Boolean
+
+  createdAt: String
+
+  deleted: Boolean
+
+  updatedAt: String
+
+  files: [File]
+
+  replyingTo: Message
+
+  user: User
+
+  hasMoreReplies: Boolean
+
+  replyingToId: ID
+
+  clientId: String
+
+  reactions(after: String, first: Int, before: String, last: Int): ReactionConnection
+
+  childrenCount: Int
+
+  children(after: String, first: Int, before: String, last: Int): MessageConnection
+}
+
+type SpaceEdge {
+  node: Space
+  cursor: String
+}
+
+type MessageEdge {
+  node: Message
+  cursor: String
+}
+
+type Post implements HasViews & HasPosts & ImageItem & Node {
+  "The ID of an object"
+  id: ID!
+
+  color: String
+
+  postId: Int
+
+  createdBy: Int
+
+  title: String
+
+  profilepic: String
+
+  body: String
+
+  type: String
+
+  deleted: Boolean
+
+  createdAt: String
+
+  updatedAt: String
+
+  link: String
+
+  edited: Boolean
+
+  anonymous: Boolean
+
+  startDate: DateTime
+
+  endDate: String
+
+  completed: Boolean
+
+  priority: Int
+
+  fileFormat: String
+
+  subtype: String
+
+  fileSize: Int
+
+  spaceReferencedId: Int
+
+  dueDate: String
+
+  latitude: Decimal
+
+  longitude: Decimal
+
+  address: String
+
+  visibility: Int
+
+  delta: Json
+
+  icon: String
+
+  bannerpic: String
+
+  defaultBanner: String
+
+  author: User
+
+  numDownvotes: Int
+
+  numUpvotes: Int
+
+  voteValue: Int
+
+  numComments: Int
+
+  subscription: PostSubscription
+
+  spaceReferenced: Space
+
+  attributes(after: String, first: Int, before: String, last: Int): AttributeConnection
+
+  attributeValues(postId: Int, spaceId: Int): [AttributeValue]
+
+  users(after: String, first: Int, before: String, last: Int, userTypes: [String]): UserConnection
+
+  spaces(after: String, first: Int, before: String, last: Int): SpaceConnection
+
+  reactions(after: String, first: Int, before: String, last: Int): ReactionConnection
+
+  comments(after: String, first: Int, before: String, last: Int): MessageConnection
+
+  tags(after: String, first: Int, before: String, last: Int): PostTagConnection
+
+  path(after: String, first: Int, before: String, last: Int, spaceId: Int!, count: Int, reverse: Boolean): PostConnection
+
+  posts(
+    after: String, first: Int, before: String, last: Int, filterTypes: [String], sortBy: String, spaceId: Int, viewPurpose: String, excludeParentTypes: [String!], excludePostIds: [ID!]
+  ): PostConnection
+
+  numPosts(filterTypes: [String], excludeParentTypes: [String!], completed: Boolean): Int
+
+  myVote: PostVote
+
+  invite: PostUser
+
+  poll: Poll
+
+  views(after: String, first: Int, before: String, last: Int, purpose: [String], defaultView: Boolean): ViewConnection
+
+  "If the post was fetched from a space this field will be populated with the corresponding space_post"
+  spacePost(spaceId: Int, key: String): SpacePost
+
+  "Get space user information for the author depending on location"
+  spaceAuthor(spaceId: Int): SpaceUser
+
+  "If the post was fetched using its relation to another this field will be populated with that relation"
+  parentRelation: PostRelation
+
+  attachments(after: String, first: Int, before: String, last: Int): PostConnection
+}
+
+input DeletePostInput {
+  postId: Int!
+  deleteRelations: Boolean!
+}
+
+input CreateRelationInput {
+  postId: Int!
+  parentPostId: Int!
+  index: Int
+  spaceId: Int
+  viewId: Int
+}
+
+type MovePostOutput {
+  deletedRelationId: ID
+  deletedPostId: ID
+  newParentPostId: ID
+  prevParentPostId: ID
+  relation: PostRelation
+}
+
+input NotificationReadInput {
+  read: Boolean!
+  notificationId: Int!
+}
+
+input NewNotificationsSubInput {
+  userId: Int!
+}
+
+type PostUser implements Node {
+  "The ID of an object"
+  id: ID!
+
+  postId: Int
+
+  userId: Int
+
+  type: String
+
+  relations: Boolean
+
+  edits: Boolean
+
+  comments: Boolean
+
+  user: User
+}
+
+type RoomUser implements Node {
+  "The ID of an object"
+  id: ID!
+
+  userId: Int
+
+  roomId: Int
+
+  archived: Boolean
+
+  unread: Boolean
+
+  roleId: Int
+
+  unreadNum: Int
+
+  muted: Boolean
+
+  notificationSettings: Int
+
+  mutedUntil: String
+
+  roomUserId: Int
+
+  user: User
+
+  room: Room
+}
+
+type Notification implements Node {
+  "The ID of an object"
+  id: ID!
+
+  userId: Int
+
+  commentId: Int
+
+  userNotificationId: Int
+
+  createdBy: Int
+
+  type: String
+
+  createdAt: String
+
+  description: String
+
+  read: Boolean
+
+  spaceUserId: Int
+
+  spaceId: Int
+
+  connectionId: Int
+
+  spacePostId: Int
+
+  post: Post
+
+  post2: Post
+
+  space: Space
+
+  spaceUser: SpaceUser
+
+  comment: Message
+
+  postUser: PostUser
+
+  connection: Connection
+
+  user: User
+
+  postSubscription: PostSubscription
+}
+
+type ViewConnection {
+  pageInfo: PageInfo!
+  edges: [ViewEdge]
+}
+
+type RootQueryType {
+  "Validate invite link"
+  validateInviteLink(key: String): SpaceUser
+
+  "Get all spaces in a list"
+  spaces(after: String, first: Int, before: String, last: Int, filters: SpaceFilters, spaceIds: [String]): SpaceConnection
+
+  "Get a single space by id"
+  space(spaceId: Int): Space
+
+  "Get recommended groups"
+  recommendedGroups(after: String, first: Int, before: String, last: Int): SpaceConnection
+
+  spaceGraph(
+    spaceId: Int!, filterTypes: [String], sortBy: String, viewPurpose: String, hierarchy: Boolean, includeAllTypes: Boolean, excludeParentTypes: [String!], excludePostIds: [ID!]
+  ): Graph
+
+  "Get room by an id"
+  room(roomId: ID!): Room
+
+  "Get message by id"
+  message(messageId: Int!): Message
+
+  "Get direct message room by an user_ids. Optionally unarchive if option is set."
+  roomByUsers(userIds: [ID!]!, unarchive: Boolean): Room
+
+  "Get all users"
+  users(after: String, first: Int, before: String, last: Int): UserConnection
+
+  "Search for users"
+  searchUsers(after: String, first: Int, before: String, last: Int, query: String!, excludeSpaceId: Int): UserConnection
+
+  "Get a single user by id"
+  user(userId: ID!): User
+
+  "Get current signed in user information"
+  me: User
+
+  "Get users by user_id"
+  usersByIds(userIds: [ID!]!): [User]
+
+  "Get feed"
+  feed(after: String, first: Int, before: String, last: Int, filterTypes: [String], sortBy: String): PostConnection
+
+  "Generate auth token for websocket connections"
+  socketAuth: Auth
+
+  "Search for posts"
+  searchPosts(after: String, first: Int, before: String, last: Int, query: String!): PostConnection
+
+  "Get post by id"
+  post(postId: ID): Post
+
+  postGraph(postId: Int!, excludeParent: Boolean, viewId: Int): Graph
+
+  "Get all causes"
+  causes(after: String, first: Int, before: String, last: Int, query: String): StringConnection
+
+  "Get all skills"
+  skills(after: String, first: Int, before: String, last: Int, query: String): StringConnection
+
+  "Get posts for a given tag optionally from a specific space"
+  tagPosts(after: String, first: Int, before: String, last: Int, tag: String!, spaceId: Int): PostConnection
+
+  numTagPosts(tag: String!, spaceId: Int): Int
+
+  userTag(tag: String!): UserTag
+
+  "Search for tags"
+  searchTags(after: String, first: Int, before: String, last: Int, query: String!): StringConnection
+
+  "Search for tags"
+  tags(after: String, first: Int, before: String, last: Int): StringConnection
+
+  node(
+    "The ID of an object."
+    id: ID!
+  ): Node
+}
+
+"""
+The `DateTime` scalar type represents a date and time in the UTC
+timezone. The DateTime appears in a JSON response as an ISO8601 formatted
+string, including UTC timezone ("Z"). The parsed date and time string will
+be converted to UTC if there is an offset.
+"""
+scalar DateTime
+
+type Space implements HasViews & HasPosts & SectionItem & ImageItem & Node {
+  "The ID of an object"
+  id: ID!
+
+  "Get invite link for a space and with optional parameters"
+  inviteLink(type: String!, expiresAt: String, numUses: Int): String
+
+  spaceId: Int!
+
+  name: String!
+
+  description: String
+
+  type: String
+
+  bannerpic: String
+
+  profilepic: String
+
+  city: Boolean
+
+  info: Info
+
+  state: Boolean
+
+  longitude: Decimal
+
+  latitude: Decimal
+
+  createdAt: String
+
+  hidden: Boolean
+
+  address: String
+
+  archived: Boolean
+
+  project: Boolean
+
+  startDate: String
+
+  endDate: String
+
+  spaceType: String
+
+  rules: [Rule]
+
+  accessType: String
+
+  defaultBanner: String
+
+  personalUserId: ID
+
+  projectType: String
+
+  lastUpdatedAt: DateTime
+
+  favorite: Boolean
+
+  causes: [String]
+
+  parentSpaceId: Int
+
+  attributes(after: String, first: Int, before: String, last: Int): AttributeConnection
+
+  rooms(after: String, first: Int, before: String, last: Int): RoomConnection
+
+  numRooms: Int
+
+  searchRooms(after: String, first: Int, before: String, last: Int, query: String!): RoomConnection
+
+  users(after: String, first: Int, before: String, last: Int): UserConnection
+
+  searchUsers(after: String, first: Int, before: String, last: Int, query: String!): UserConnection
+
+  moderators(after: String, first: Int, before: String, last: Int): UserConnection
+
+  numInvitees: Int
+
+  invitees(after: String, first: Int, before: String, last: Int): UserConnection
+
+  numModerators: Int
+
+  members(after: String, first: Int, before: String, last: Int): UserConnection
+
+  numMembers: Int
+
+  followers(after: String, first: Int, before: String, last: Int): UserConnection
+
+  numFollowers: Int
+
+  invitedUsers(after: String, first: Int, before: String, last: Int): UserConnection
+
+  spaces(after: String, first: Int, before: String, last: Int, filters: SpaceFilters): SpaceConnection
+
+  numSpaces(filters: SpaceFilters): Int
+
+  sections(after: String, first: Int, before: String, last: Int): PostConnection
+
+  wikiTopics(after: String, first: Int, before: String, last: Int): PostConnection
+
+  views(after: String, first: Int, before: String, last: Int, purpose: [String], defaultView: Boolean): ViewConnection
+
+  roles: [Role]
+
+  role(roleId: Int!): Role
+
+  currUser: SpaceUser!
+
+  permissions: Role
+
+  numUsers: Int
+
+  posts(
+    after: String, first: Int, before: String, last: Int, filterTypes: [String], sortBy: String, viewPurpose: String, hierarchy: Boolean, includeAllTypes: Boolean, excludeParentTypes: [String!], excludePostIds: [ID!]
+  ): PostConnection
+
+  numPosts(filterTypes: [String], viewPurpose: String, hierarchy: Boolean, excludeParentTypes: [String!]): Int
+
+  relations(after: String, first: Int, before: String, last: Int, filterTypes: [String]): PostRelationConnection
+
+  tags(after: String, first: Int, before: String, last: Int): SpaceTagConnection
+}
+
+type JoinSpace {
+  userEdge: UserEdge
+}
+
+type AttributeEdge {
+  node: Attribute
+  cursor: String
+}
+
+input NotificationReadAllInput {
+  read: Boolean
+}
+
+type Sort {
+  attributeId: Int
+  ascending: Boolean
+  percentage: Int
+}
+
+input ReorderEntryInput {
+  viewId: Int!
+  entryId: Int!
+  index: Int
+}
+
+input RemoveEntryInput {
+  viewId: Int!
+  entryId: Int!
+}
+
+input SubscribeTag {
+  tag: String!
+}
+
+type DeletePostOutput {
+  deletedPostId: ID
+  deletedPost: Post
+}
+
+type VotePostOutput {
+  post: Post
+  myVote: PostVote
+}
+
+input PinRelatedPostInput {
+  relationId: Int!
+  pinned: Boolean!
+}
+
+input MultiCompleteInput {
+  postId: Int!
+  userId: Int!
+}
+
+input CreateViewInput {
+  postId: Int
+  spaceId: Int
+  type: String
+  defaultView: Boolean
+  name: String
+}
+
+type DeletedSpaceUserOutput {
+  currUser: SpaceUser!
+  deletedSpaceUserId: ID
+}
+
+type PollOption {
+  value: String
+  votes: Int
+}
+
+type Tag implements Node {
+  "The ID of an object"
+  id: ID!
+
+  info: String
+}
+
+type RoomDeleteEdge {
+  deletedRoomId: ID
+}
+
+type PostRelationEdge {
+  node: PostRelation
+  cursor: String
+}
+
+type DeleteReactionOutput {
+  deletedReactionId: ID
+  reaction: Reaction
+}
+
+type CreateLinkOutput {
+  relation: PostRelation
+}
+
+"Represents an uploaded file."
+scalar Upload
+
+input SignUpInput {
+  email: String!
+  password: String!
+  name: String!
+}
+
+input SendMessageInput {
+  body: String!
+  delta: String
+  postId: Int
+  replyingTo: Int
+  roomId: Int
+  spaceId: Int
+  mentions: [MentionInput]
+  clientId: String
+}
+
+input PinMessageInput {
+  messageId: ID!
+  pinned: Boolean!
+}
+
+type PostConnection {
+  pageInfo: PageInfo!
+  edges: [PostEdge]
+}
+
+type TopicConnection {
+  pageInfo: PageInfo!
+  edges: [TopicEdge]
+}
+
+type FavoriteConnection {
+  pageInfo: PageInfo!
+  edges: [FavoriteEdge]
+}
+
+type RoomConnection {
+  pageInfo: PageInfo!
+  edges: [RoomEdge]
+}
+
+type Graph {
+  nodes: [Post]
+  edges: [PostRelation]
+}
+
+type TaskPostUserEdge {
+  userEdge: UserEdge
+  deletedUserId: ID
+}
+
+type Favorite implements Node {
+  "The ID of an object"
+  id: ID!
+
+  favoriteId: Int
+
+  spaceId: Int
+
+  spacePostId: Int
+
+  index: Int
+
+  space: Space
+
+  post: Post
+}
+
+input AttributeValueInput {
+  attributeId: Int
+  postId: Int
+  value: String
+  listValue: [String]
+}
+
+input PostInput {
+  postId: Int
+  title: String
+  delta: Json
+  body: String
+  completed: Boolean
+  bannerpic: String
+  icon: String
+  color: String
+  type: String!
+  priority: Int
+  dueDate: DateTime
+  startDate: DateTime
+  endDate: DateTime
+  latitude: Decimal
+  longitude: Decimal
+  spaceId: Int
+  address: String
+  spaces: [SpacePostInput]
+  assignees: [Int]
+  requestees: [Int]
+  invitees: [Int]
+  tags: [String]
+  attributes: [AttributeInput]
+  poll: AttributeInput
+  attributeValues: [AttributeValueInput]
+  attachments: [FileInput]
+}
+
+type PostOutput {
+  postEdge: PostEdge
+}
+
+type DeleteRelationOutput {
+  deletedRelationId: ID
+}
+
+input TempSignInInput {
+  name: String
+  ipAddress: String
+  anonymous: Boolean!
+}
+
+type FavoriteSpaceOutput {
+  space: Space
+  deletedFavoriteId: ID
+  favoriteSpaceEdge: FavoriteEdge
+}
+
+input DeleteRoomInput {
+  roomId: ID!
+}
+
+input InviteUsersSpaceInput {
+  userIds: [Int]
+  spaceId: Int
+}
+
+input PinSpacePostInput {
+  spacePostId: Int!
+  pinned: Boolean!
+}
+
+interface HasViews {
+  views(first: Int, after: String): ViewConnection
+}
+
+"""
+The `Json` scalar type represents arbitrary json string data, represented as UTF-8
+character sequences. The Json type is most often used to represent a free-form
+human-readable json string.
+"""
+scalar Json
+
+input Option {
+  option: String
+  imageUrl: String
+}
+
+type PostSubscription implements Node {
+  "The ID of an object"
+  id: ID!
+
+  postSubscriptionId: Int
+
+  postId: Int
+
+  userId: Int
+}
+
+type Room implements Node {
+  "The ID of an object"
+  id: ID!
+
+  name: String
+
+  roomId: Int
+
+  spaceId: Int
+
+  archived: Boolean
+
+  description: String
+
+  dm: Boolean
+
+  createdBy: Int
+
+  createdAt: String
+
+  lastMessageAt: DateTime
+
+  profilepic: String
+
+  index: Int
+
+  private: Boolean
+
+  type: String
+
+  visibility: String
+
+  currUser: RoomUser
+
+  numUsers: Int
+
+  otherUser: User
+
+  messages(after: String, first: Int, before: String, last: Int): MessageConnection
+
+  pinnedMessages(after: String, first: Int, before: String, last: Int): MessageConnection
+
+  users(after: String, first: Int, before: String, last: Int): RoomUserConnection
+
+  activeUsers(after: String, first: Int, before: String, last: Int): RoomUserConnection
+
+  inactiveUsers(after: String, first: Int, before: String, last: Int): RoomUserConnection
+}
+
+input CreateConnectionInput {
+  user1Id: Int!
+  user2Id: Int!
+  follower: Boolean
+}
+
+input UpdateConnectionInput {
+  connectionId: Int
+  accepted: Boolean
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+input JoinSpaceInput {
+  spaceId: Int!
+  type: String!
+  requestType: String
+}
+
+type TaskInfo {
+  attributes: [Attribute]
+}
+
+type AttributeConnection {
+  pageInfo: PageInfo!
+  edges: [AttributeEdge]
+}
+
+type UserEdge {
+  node: User
+  cursor: String
+}
+
+type ReactionEdge {
+  node: Reaction
+  cursor: String
+}
+
+input DeleteNotificationInput {
+  notificationId: Int!
+}
+
+input GoogleSignInInput {
+  accessToken: String!
+}
+
+input UpdateMessageInput {
+  messageId: ID!
+  body: String!
+}
+
+type CreateSpaceOutput {
+  spaceEdge: SpaceEdge
+  referencingPost: Post
+}
+
+type NotificationConnection {
+  pageInfo: PageInfo!
+  edges: [NotificationEdge]
+}
+
+type MessageUpdateReply {
+  message: Message
+}
+
+input BatchDeletePostInput {
+  postIds: [Int]
+  deleteRelations: Boolean!
+}
+
+type BatchDeletePostOutput {
+  deletedPostId: [ID]
+}
+
+type AddReactionOutput {
+  newReaction: ReactionEdge
+  reaction: Reaction
+}
+
+input DeleteVotePostInput {
+  postVoteId: Int!
+}
+
+input SubscribePostInput {
+  postId: Int!
+}
+
+input FavoriteSpaceInput {
+  spaceId: Int!
+  favorite: Boolean!
+}
+
+input ReadRoomInput {
+  roomId: ID!
+  spaceId: ID
+}
+
+interface HasPosts {
+  posts(
+    first: Int, after: String, filterTypes: [String], sortBy: String, viewPurpose: String, includeAllTypes: Boolean, hierarchy: Boolean, excludePostIds: [ID!], excludeParentTypes: [String!]
+  ): PostConnection
+  numPosts(filterTypes: [String], hierarchy: Boolean, excludeParentTypes: [String!]): Int
+}
+
+type Poll implements Node {
+  "The ID of an object"
+  id: ID!
+
+  attribute: Attribute
+
+  total: Int
+
+  selectedOption: String
+
+  selectedOptions: [String]
+
+  options: [PollOption]
+}
+
+type Skill implements Node {
+  "The ID of an object"
+  id: ID!
+
+  value: String
+}
+
+type File {
+  url: String
+  type: String
+  fileSize: Int
+  name: String
+}
+
+input ChannelOrderChange {
+  spaceId: Int
+  roomId: Int
+  oldIndex: Int
+  newIndex: Int
+}
+
+type Rule {
+  name: String
+  description: String
+}
+
+type Role {
+  canPost: [String]
+  editUserTypes: [String]
+  canInvite: Boolean
+  canCreateRooms: Boolean
+  canCreateSections: Boolean
+  canCreateGroups: Boolean
+  canCreateProjects: Boolean
+  canView: Boolean
+  canEditSettings: Boolean
+  canDeletePosts: Boolean
+  canEditAnyPost: Boolean
+  canDeleteSpace: Boolean
+  canPinPosts: Boolean
+  canEditTasks: Boolean
+  canImportPosts: Boolean
+  canEdit: Boolean
+}
+
+type ViewEdge {
+  node: View
+  cursor: String
+}
+
+input ChangeSkillsInput {
+  items: [String!]!
+}
+
+input AddReactionInput {
+  name: String!
+  emoji: String!
+  postId: Int
+  messageId: Int
+  spaceId: Int
+}
+
+input UpdateRoomInput {
+  roomId: ID!
+  name: String!
+  description: String
+  type: String!
+  visibility: String!
+}
+
+input CreateRoomInput {
+  spaceId: Int
+  userIds: [String]
+  name: String
+  type: String
+  dm: Boolean
+  visibility: String
+  index: Int
+  clientId: String
+}
+
+input ChannelSubInput {
+  spaceId: Int
+  clientId: String
+}
+
+type InviteUserOutput {
+  userEdges: [UserEdge]
+}
+
+type RootMutationType {
+  "Send a message"
+  sendMessage(input: SendMessageInput): MessageReplyEdge
+
+  "Delete a message"
+  deleteMessage(input: DeleteMessageInput!): MessageDeleteEdge
+
+  "Update a message"
+  updateMessage(input: UpdateMessageInput!): MessageUpdateReply
+
+  "Pin or unpin a message"
+  pinMessage(input: PinMessageInput!): MessageUpdateReply
+
+  "Create a room"
+  createRoom(input: CreateRoomInput): RoomEdgeEdge
+
+  "Delete a room"
+  deleteRoom(input: DeleteRoomInput): RoomDeleteEdge
+
+  "Read a room"
+  readRoom(input: ReadRoomInput!): ReadRoomOutput
+
+  "Update a room"
+  updateRoom(input: UpdateRoomInput!): RoomUpdateReply
+
+  "Set last room id"
+  setLastRoomId(input: SetLastRoomIdInput!): SetLastRoomIdReply
+
+  "Reorder channels in a space"
+  reorderSpaceChannels(input: ChannelOrderChange): Room
+
+  "Reorder user's spaces in a list"
+  reorderUserSpaces(input: SpaceOrderChange): SpaceUser
+
+  "Reorder user's favorite spaces"
+  reorderSpaceFavorites(input: SpaceOrderChange): SpaceUser
+
+  "Set current page for tracking"
+  setCurrentPage(input: CurrentPageInput): User
+
+  "Create connection"
+  createConnection(input: CreateConnectionInput): User
+
+  "Update connection"
+  updateConnection(input: UpdateConnectionInput): Connection
+
+  "Delete or reject connection"
+  deleteConnection(input: DeleteConnectionInput): Connection
+
+  "Change user preferences"
+  changePreferences(input: ChangePrefsInput): User
+
+  "Favorite space"
+  toggleFavoriteSpace(input: FavoriteSpaceInput): FavoriteSpaceOutput
+
+  "Temp sign in"
+  tempSignIn(input: TempSignInInput): User
+
+  "Sign in"
+  signIn(input: SignInInput): User
+
+  "Sign up"
+  signUp(input: SignUpInput): User
+
+  "Sign in\/up using Google"
+  googleSignIn(input: GoogleSignInInput): User
+
+  "Sign out"
+  signOut: User
+
+  "Invite users to space"
+  inviteUsersSpace(input: InviteUsersSpaceInput): InviteUserOutput
+
+  createSpace(input: CreateSpaceInput): CreateSpaceOutput
+
+  updateSpace(input: UpdateSpaceInput): Space
+
+  archiveSpace(input: ArchiveSpaceInput): Space
+
+  joinSpace(input: JoinSpaceInput): JoinSpace
+
+  updateSpaceUser(input: UpdateSpaceUserInput): SpaceUser
+
+  pinSpacePost(input: PinSpacePostInput): SpacePost
+
+  removeSpaceUser(input: LeaveSpaceUserInput): DeletedSpaceUserOutput
+
+  "Subscribe to a tag"
+  toggleSubscribeTag(input: SubscribeTag): UserTag
+
+  saveSkills(input: ChangeSkillsInput): [String]
+
+  saveTopics(input: ChangeSkillsInput): [String]
+
+  "Create post"
+  createPost(input: PostInput!): PostOutput
+
+  "Update post"
+  updatePost(input: PostInput!, singleField: Boolean): PostOutput
+
+  "Multi-complete a task"
+  multiCompleteTask(input: MultiCompleteInput!): TaskPostUserEdge
+
+  "Delete post"
+  deletePost(input: DeletePostInput!): DeletePostOutput
+
+  "Delete a bunch of posts"
+  batchDeletePost(input: BatchDeletePostInput!): BatchDeletePostOutput
+
+  "Reorder a space post of some type"
+  reorderSpacePostOfType(input: ReorderSpacePostInput!): SpacePost
+
+  "Reorder a related post of some type"
+  reorderRelatedPostOfType(input: ReorderSpacePostInput!): PostRelation
+
+  "Create reaction"
+  addReaction(input: AddReactionInput!): AddReactionOutput
+
+  "Delete reaction"
+  deleteReaction(input: DeleteReactionInput!): DeleteReactionOutput
+
+  "Move a post from one parent post to another"
+  movePost(input: MovePostInput!): MovePostOutput
+
+  "Create relation between two existing posts"
+  createRelation(input: CreateRelationInput!): PostOutput
+
+  "Create relation between two existing posts using their titles"
+  createLink(input: CreateLinkInput!): CreateLinkOutput
+
+  "Delete a relation"
+  deleteRelation(input: DeleteRelationInput!): DeleteRelationOutput
+
+  "Add or change vote"
+  votePost(input: VotePostInput!): VotePostOutput
+
+  "Delete vote"
+  deleteVotePost(input: DeleteVotePostInput!): VotePostOutput
+
+  "Vote or change vote on a poll post"
+  votePoll(input: PollVoteInput!): AttributeValue
+
+  "Rsvp post"
+  rsvpPost(input: RsvpPostInput!): PostUser
+
+  "Import posts using a csv"
+  importPostFile(input: ImportPostFileInput!): String
+
+  "Pin related post"
+  pinRelatedPost(input: PinRelatedPostInput!): PostRelation
+
+  "Reorder or add an entry"
+  putEntry(input: ReorderEntryInput): View
+
+  "Reorder or add a group"
+  putGroup(input: ReorderGroupInput): View
+
+  "Remove entry"
+  removeEntry(input: RemoveEntryInput): View
+
+  "Remove group"
+  removeGroup(input: RemoveGroupInput): View
+
+  "Create view"
+  createView(input: CreateViewInput): ViewEdgeOutput
+
+  "Subscribe to a post"
+  subscribePost(input: SubscribePostInput!): PostSubscription
+
+  "Unsubscribe from a post"
+  unsubscribePost(input: SubscribePostInput!): PostSubscription
+
+  "Read notification"
+  readNotification(input: NotificationReadInput!): Notification
+
+  "Read all"
+  readAllNotifications(input: NotificationReadAllInput!): String
+
+  "Delete notification"
+  deleteNotification(input: DeleteNotificationInput!): DeleteNotificationOutput
+}
+
+type MessageConnection {
+  pageInfo: PageInfo!
+  edges: [MessageEdge]
+}
+
+type SpaceConnection {
+  pageInfo: PageInfo!
+  edges: [SpaceEdge]
+}
+
+"""
+The `Decimal` scalar type represents signed double-precision fractional
+values parsed by the `Decimal` library.  The Decimal appears in a JSON
+response as a string to preserve precision.
+"""
+scalar Decimal
+
+type MessageSubReply {
+  messageEdge: MessageEdge
+  deletedMessageId: ID
+  message: Message
+  clientId: String
+}
+
+type SpaceTag implements Node {
+  "The ID of an object"
+  id: ID!
+
+  tag: String
+
+  pinned: Boolean
+
+  postCount: Int
+}
+
+type Attribute implements Node {
+  "The ID of an object"
+  id: ID!
+
+  attributeId: Int
+
+  postId: Int
+
+  index: Int
+
+  name: String
+
+  type: String
+
+  options: Json
+
+  createdAt: String
+
+  question: String
+
+  description: String
+}
+
+input SpacePostInput {
+  spaceId: Int!
+  parentPostId: Int
+  index: Int
+  current: Boolean
+}
+
+input CreateLinkInput {
+  post1Title: String!
+  post2Title: String!
+  spaceId: Int
+  viewId: Int
+}
+
+type DeleteNotificationOutput {
+  deletedNotificationId: ID!
+}
+
+input DeleteConnectionInput {
+  userId: Int!
+}
+
+input DeleteMessageInput {
+  messageId: ID!
+}
+
+type StringConnection {
+  pageInfo: PageInfo!
+  edges: [StringEdge]
+}
+
+type SkillConnection {
+  pageInfo: PageInfo!
+  edges: [SkillEdge]
+}
+
+type Connection implements Node {
+  "The ID of an object"
+  id: ID!
+
+  user1Id: Int
+
+  user2Id: Int
+
+  connectionId: Int
+
+  createdAt: DateTime
+
+  accepted: Boolean
+
+  follower: Boolean
+}
+
+type RoomUserConnection {
+  pageInfo: PageInfo!
+  edges: [RoomUserEdge]
+}
+
+type SpaceTagConnection {
+  pageInfo: PageInfo!
+  edges: [SpaceTagEdge]
+}
+
+type SetLastRoomIdReply {
+  spaceUser: SpaceUser
+  me: User
+}
+
+type PostTag implements Node {
+  "The ID of an object"
+  id: ID!
+
+  postId: Int
+
+  tagId: Int
+
+  attached: Boolean
+
+  tag: String
+}
+
+input SpaceOrderChange {
+  spaceId: Int
+  oldIndex: Int
+  newIndex: Int
+}
+
+type PostTagEdge {
+  node: PostTag
+  cursor: String
+}
+
+input VotePostInput {
+  postId: Int!
+  spaceId: Int
+  upvote: Boolean!
+}
+
+input MovePostInput {
+  postId: Int!
+  existingRelationId: Int
+  newParentPostId: Int
+  spaceId: Int
+  index: Int
+  viewId: Int
+}
+
+input PollVoteInput {
+  postId: Int!
+  attributeId: Int!
+  selected: String!
+  attributeType: String!
+}
