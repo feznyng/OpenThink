@@ -11,15 +11,6 @@ config :openthink_backend, OpenthinkBackend.Repo,
   pool_size: 10,
   types: OpenthinkBackend.Postgrex.Types
 
-# Configure redis and redbird
-redis_host = System.get_env("REDIS_HOST")
-
-config :redbird,
-  key_namespace: "openthink_backend_",
-  redis_options: [
-    host: redis_host
-  ]
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

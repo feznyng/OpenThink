@@ -10,15 +10,6 @@ config :openthink_backend, OpenthinkBackend.Repo,
   url: db_url,
   types: OpenthinkBackend.Postgrex.Types
 
-# Configure redis and redbird
-redis_host = System.get_env("REDIS_HOST")
-
-config :redbird,
-  key_namespace: "openthink_backend_",
-  redis_options: [
-    host: redis_host
-  ]
-
 origins = ["https://www.openthink.org", "//*.openthink.org"]
 
 config :openthink_backend, OpenthinkBackendWeb.Endpoint,
