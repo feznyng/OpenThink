@@ -6,7 +6,7 @@ defmodule OpenthinkBackendWeb.Endpoint do
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
-    store: :redis,
+    store: :cookie,
     key: "_openthink_backend_key",
     signing_salt: "95IYbPHY"
   ]
@@ -52,7 +52,7 @@ defmodule OpenthinkBackendWeb.Endpoint do
   plug Plug.Session, @session_options
   plug Corsica,
     origins: "*",
-    allow_headers: ["accept", "content-type", "authorization"],
+    allow_headers: ["accept", "content-type", "authorization", "apollo-require-preflight"],
     allow_credentials: true,
     log: [rejected: :error, invalid: :warn, accepted: :debug]
   plug OpenthinkBackendWeb.Router
