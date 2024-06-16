@@ -1,10 +1,8 @@
 import Config
 require Logger
 
-service_name = System.fetch_env!("SERVICE_NAME")
 db_url = System.fetch_env!("DB_URL")
 secret_key_base = System.fetch_env!("SECRET_KEY_BASE")
-port = System.fetch_env!("PORT")
 
 config :openthink_backend, OpenthinkBackend.Repo,
   url: db_url,
@@ -13,11 +11,6 @@ config :openthink_backend, OpenthinkBackend.Repo,
 origins = ["https://www.openthink.org", "//*.openthink.org"]
 
 config :openthink_backend, OpenthinkBackendWeb.Endpoint,
-  http: [port: port],
+  http: [port: String.to_integer(System.get_env("PORT") || "4000"), transport_options: [socket_opts: [:inet6]]],
   secret_key_base: secret_key_base,
-  url: [host: {:system, "APP_HOST"}, port: {:system, "PORT"}],
   check_origin: origins
-
-config :peerage, via: Peerage.Via.Dns,
-  dns_name: service_name,
-  app_name: "openthink_backend"
