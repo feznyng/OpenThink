@@ -53,11 +53,7 @@ export default function TagPosts({ query }: TagPostsProps) {
     TagPostsFragment$key
   >(
     graphql`
-<<<<<<< Updated upstream
       fragment TagPostsFragment on RootQueryType
-=======
-      fragment TagPostsFragment on Query
->>>>>>> Stashed changes
       @refetchable(queryName: "TagPostConnectionQuery") {
         tagPosts(
           first: $postCount
