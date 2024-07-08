@@ -1,48 +1,51 @@
 defmodule OpenthinkBackend.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias OpenthinkBackend.{Repo}
   require Logger
   @primary_key {:user_id, :id, autogenerate: true}
 
-
   schema "users" do
-    field :firstname, :string
-    field :lastname, :string
-    field :name, :string
-    field :email, :string
-    field :profilepic, :string
-    field :bannerpic, :string
-    field :phonenumber, :integer
-    field :address, :string
-    field :city, :boolean
-    field :state, :boolean
-    field :longitude, :decimal
-    field :latitude, :decimal
-    field :hash, :string
-    field :salt, :string
-    field :profession, :string
-    field :pronouns, :string
-    field :bio, :string
-    field :created_at, :utc_datetime
-    field :updated_at, :utc_datetime
-    field :birthdate, :date
-    field :ip_address, :string
-    field :unread_messages, :boolean
-    field :google_id, :string
-    field :default_banner, :string
-    field :admin, :boolean
-    field :last_room_id, :integer
-    field :dark_mode, :boolean
-    field :productivity_view, :boolean
-    field :old_hash, :boolean
-    field :password, :string, virtual: true
-    many_to_many :spaces, OpenthinkBackend.Space, join_through: "space_users", join_keys: [user_id: :user_id, space_id: :space_id]
-    has_many :messages, OpenthinkBackend.Message, foreign_key: :message_id
-    has_one :connection, OpenthinkBackend.Connection, foreign_key: :user1_id
-    has_one :space_user, OpenthinkBackend.SpaceUser, foreign_key: :user_id
-    has_many :room_users, OpenthinkBackend.RoomUser, foreign_key: :user_id
-    has_one :post_user, OpenthinkBackend.PostUser, foreign_key: :user_id
+    field(:firstname, :string)
+    field(:lastname, :string)
+    field(:name, :string)
+    field(:email, :string)
+    field(:profilepic, :string)
+    field(:bannerpic, :string)
+    field(:phonenumber, :integer)
+    field(:address, :string)
+    field(:city, :boolean)
+    field(:state, :boolean)
+    field(:longitude, :decimal)
+    field(:latitude, :decimal)
+    field(:hash, :string)
+    field(:salt, :string)
+    field(:profession, :string)
+    field(:pronouns, :string)
+    field(:bio, :string)
+    field(:created_at, :utc_datetime)
+    field(:updated_at, :utc_datetime)
+    field(:birthdate, :date)
+    field(:ip_address, :string)
+    field(:unread_messages, :boolean)
+    field(:google_id, :string)
+    field(:default_banner, :string)
+    field(:admin, :boolean)
+    field(:last_room_id, :integer)
+    field(:dark_mode, :boolean)
+    field(:productivity_view, :boolean)
+    field(:old_hash, :boolean)
+    field(:password, :string, virtual: true)
+
+    many_to_many(:spaces, OpenthinkBackend.Space,
+      join_through: "space_users",
+      join_keys: [user_id: :user_id, space_id: :space_id]
+    )
+
+    has_many(:messages, OpenthinkBackend.Message, foreign_key: :message_id)
+    has_one(:connection, OpenthinkBackend.Connection, foreign_key: :user1_id)
+    has_one(:space_user, OpenthinkBackend.SpaceUser, foreign_key: :user_id)
+    has_many(:room_users, OpenthinkBackend.RoomUser, foreign_key: :user_id)
+    has_one(:post_user, OpenthinkBackend.PostUser, foreign_key: :user_id)
   end
 
   @doc """
@@ -96,6 +99,7 @@ defmodule OpenthinkBackend.User do
 
   defp hash_password(changeset) do
     password = get_change(changeset, :password)
+
     if password && changeset.valid? do
       changeset
       |> put_change(:hash, Pbkdf2.hash_pwd_salt(password))
@@ -186,7 +190,6 @@ defmodule OpenthinkBackend.User do
     end
   end
 
-
   def temp_changeset(user, attrs \\ %{}) do
     user
     |> cast(attrs, [:firstname, :lastname, :name, :ip_address])
@@ -195,20 +198,20 @@ defmodule OpenthinkBackend.User do
   def set_last_room_id_changeset(space_user, attrs \\ %{}) do
     space_user
     |> cast(attrs, [
-      :last_room_id,
-      ])
+      :last_room_id
+    ])
     |> validate_required([
-      :last_room_id,
+      :last_room_id
     ])
   end
 
   def current_page_changeset(user, attrs \\ %{}) do
     user
     |> cast(attrs, [
-      :current_page,
-      ])
+      :current_page
+    ])
     |> validate_required([
-      :current_page,
+      :current_page
     ])
   end
 

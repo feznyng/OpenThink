@@ -3,7 +3,8 @@ defmodule OpenthinkBackendWeb.RoomChannel do
   alias OpenthinkBackendWeb.Presence
   require Logger
 
-  def join("room:" <> room_id, _params, socket) do # handles direct messages and room-level events like user typing
+  # handles direct messages and room-level events like user typing
+  def join("room:" <> _room_id, _params, socket) do
     send(self(), :after_join)
     {:ok, socket}
   end
@@ -13,19 +14,21 @@ defmodule OpenthinkBackendWeb.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_in("new_msg", message, socket) do # handle incoming messages and broadcast to everyone in the same room
+  # handle incoming messages and broadcast to everyone in the same room
+  def handle_in("new_msg", message, socket) do
     broadcast!(socket, "new_msg", message)
     {:noreply, socket}
   end
 
-  def handle_in("user_typing", user, socket) do # handle user typing and broadcast to everyone in room
+  # handle user typing and broadcast to everyone in room
+  def handle_in("user_typing", user, socket) do
     broadcast!(socket, "user_typing", user)
     {:noreply, socket}
   end
 
-  def handle_in("user_stopped_typing", user, socket) do # handle user typing and broadcast to everyone in room
+  # handle user typing and broadcast to everyone in room
+  def handle_in("user_stopped_typing", user, socket) do
     broadcast!(socket, "user_stopped_typing", user)
     {:noreply, socket}
   end
-
 end

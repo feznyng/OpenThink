@@ -1,9 +1,6 @@
 defmodule OpenthinkBackend.UserNotifier do
-
-  alias OpenthinkBackend.Mailer
-
   # Delivers the email using the application mailer.
-  defp deliver(recipient, subject, body) do
+  defp deliver(_recipient, _subject, _body) do
     # send email to user
   end
 

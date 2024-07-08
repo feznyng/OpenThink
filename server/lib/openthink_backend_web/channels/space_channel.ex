@@ -3,7 +3,7 @@ defmodule OpenthinkBackendWeb.SpaceChannel do
   alias OpenthinkBackendWeb.Presence
   require Logger
 
-  def join("space:" <> space_id, _params, socket) do
+  def join("space:" <> _space_id, _params, socket) do
     send(self(), :after_join)
     {:ok, socket}
   end
@@ -12,5 +12,4 @@ defmodule OpenthinkBackendWeb.SpaceChannel do
     push(socket, "presence_state", Presence.list(socket))
     {:noreply, socket}
   end
-
 end
