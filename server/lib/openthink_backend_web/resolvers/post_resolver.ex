@@ -644,7 +644,8 @@ defmodule OpenthinkBackendWeb.PostResolver do
         on: sp.post_id == p.post_id,
         where: p.title == ^post1 and sp.space_id == ^space_id
       )
-      |> Repo.one()
+      |> Repo.all()
+      |> Enum.at(0)
 
     post_id =
       from(
@@ -654,7 +655,8 @@ defmodule OpenthinkBackendWeb.PostResolver do
         on: sp.post_id == p.post_id,
         where: p.title == ^post2 and sp.space_id == ^space_id
       )
-      |> Repo.one()
+      |> Repo.all()
+      |> Enum.at(0)
 
     case PostQueries.create_relation(parent_post_id, post_id, user_id, space_id) do
       {:ok, relation} ->
