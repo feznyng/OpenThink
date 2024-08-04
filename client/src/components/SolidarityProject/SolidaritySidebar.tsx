@@ -157,7 +157,7 @@ export default function SolidaritySidebar({ project }: SolidaritySidebarProps) {
     });
   };
 
-  const onMenu = (postId: number, action: string) => {
+  const onMenu = (action: string, postId: number) => {
     switch (action) {
       case "Delete":
         setState({
@@ -236,9 +236,7 @@ export default function SolidaritySidebar({ project }: SolidaritySidebarProps) {
                   ]
                 : []
             }
-            onMenu={(action) =>
-              e?.node?.postId && onMenu(e.node.postId, action)
-            }
+            onMenu={onMenu}
             style={{ marginBottom: 2 }}
           />
         ))}

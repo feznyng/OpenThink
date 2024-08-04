@@ -259,9 +259,15 @@ export default function GraphActions({
         },
       },
       onCompleted: (resp) => {
+        console.log("created relation");
         const post2Id = resp.createRelation?.postEdge?.node?.postId;
         post2Id && onCreateEdge({ post1Id: parentPostId, post2Id: postId });
       },
+    });
+    setState({
+      ...state,
+      creatingType: -1,
+      nodeTitle: "",
     });
   };
 

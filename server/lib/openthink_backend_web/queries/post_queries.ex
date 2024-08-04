@@ -992,8 +992,7 @@ defmodule OpenthinkBackendWeb.PostQueries do
           |> DatabaseQueries.remove_entry_id(relation.post2_id)
         end
         relation
-        |> PostRelation.delete_changeset(%{deleted: true})
-        |> Repo.update
+        |> Repo.delete
       else
         {:error, "Relation to delete not found"}
       end

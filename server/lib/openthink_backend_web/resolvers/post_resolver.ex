@@ -675,8 +675,9 @@ defmodule OpenthinkBackendWeb.PostResolver do
         context: %{user_id: _user_id}
       }) do
     case PostQueries.delete_relation(relation_id) do
-      {:ok, _relation} ->
-        {:ok, %{deleted_relation_id: Node.to_global_id("PostRelation", relation_id)}}
+      {:ok, relation} ->
+        Logger.info(relation)
+        {:ok, %{deleted_relation_id: Node.to_global_id("Post", relation.post2_id)}}
 
       val ->
         val

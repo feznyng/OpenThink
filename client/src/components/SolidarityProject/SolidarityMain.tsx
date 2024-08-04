@@ -36,7 +36,6 @@ let colors = [
   "#ff5349",
 ];
 colors = [...colors, ...colors];
-const scaledMax = 50;
 const scaledMin = 1.5;
 
 interface SolidarityMainProps {
@@ -201,13 +200,11 @@ export default function SolidarityMain({
                 linkMap.get(post.postId.toString())?.length +
                 (isCoalition ? 10 : 0);
               size = size ? size : 1;
+
+              const scaledMax = Math.min(50, max * 2);
+
               node.val =
                 min && max && scaleNum(size, min, max, scaledMin, scaledMax);
-
-              console.log(
-                node.id,
-                scaleNum(size, min, max, scaledMin, scaledMax),
-              );
 
               nodeMap.set(post?.postId, node);
               return node;
@@ -222,15 +219,23 @@ export default function SolidarityMain({
     SolidarityPostViewQuery,
   );
 
-  React.useEffect(() => {
+  const loadPost = () => {
     if (postID) {
-      loadPostViewQuery({
-        postId: postID,
-        spaceId: parseInt(spaceID),
-        userCount: 100,
-        postCount: 1000,
-      });
+      console.log("loading post");
+      loadPostViewQuery(
+        {
+          postId: postID,
+          spaceId: parseInt(spaceID),
+          userCount: 100,
+          postCount: 1000,
+        },
+        { fetchPolicy: "network-only" },
+      );
     }
+  };
+
+  React.useEffect(() => {
+    loadPost();
   }, [postID, graph]);
 
   const onNodeClick = ({ id, x, y }: Node) => {
@@ -352,6 +357,7 @@ export default function SolidarityMain({
 
   const refresh = () => {
     refreshGraph();
+    loadPost();
     setTimeout(() => {
       setChanged(!changed);
     }, 200);
@@ -431,7 +437,7 @@ export default function SolidarityMain({
                   `/space/${spaceID}/${spacePage}` + history.location.search,
                 )
               }
-              onChange={() => {}}
+              onChange={refresh}
             />
           </Paper>
         </SuspenseLoader>

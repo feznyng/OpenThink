@@ -32,8 +32,6 @@ export default function PostAutocomplete({
 }: Props) {
   const classes = useStyles();
 
-  console.log(posts);
-
   return (
     <div className={classes.root} style={style}>
       <Autocomplete

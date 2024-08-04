@@ -26,7 +26,14 @@ import {
   ListItemText,
   Divider,
 } from "@material-ui/core";
-import { Add, Close, Delete, GroupAdd, Launch } from "@material-ui/icons";
+import {
+  Add,
+  Close,
+  Delete,
+  GroupAdd,
+  Launch,
+  Remove,
+} from "@material-ui/icons";
 import Dialog from "../Shared/Dialog";
 import { getImage } from "../../actions/S3Actions";
 import Typography from "../Shared/Typography";
@@ -51,6 +58,11 @@ import { changeQueryString, queryString } from "../../utils/urlutils";
 import ListItem from "../Shared/ListItem";
 import { primaryColor } from "../../theme";
 import ProfileLoader from "../Profile/ProfileLoader";
+import PostListItem from "../Post/PostListItem";
+import { DeleteSharp } from "@mui/icons-material";
+import { SolidarityPostViewDeleteRelationMutation } from "./__generated__/SolidarityPostViewDeleteRelationMutation.graphql";
+import { SolidarityPostViewRelationsPaginationQuery } from "./__generated__/SolidarityPostViewRelationsPaginationQuery.graphql";
+import { SolidarityPostViewRelationsFragment$key } from "./__generated__/SolidarityPostViewRelationsFragment.graphql";
 
 interface SolidarityPostViewProps {
   queryRef: any;
@@ -95,6 +107,7 @@ export default function SolidarityPostView({
           type
           delta
           ...ActionItemFragment
+          ...SolidarityPostViewRelationsFragment
           postId
           body
           title
@@ -129,7 +142,7 @@ export default function SolidarityPostView({
     graphql`
       fragment SolidarityPostViewFragment on Space
       @refetchable(queryName: "SolidarityPostViewPaginationQuery") {
-        posts(first: $postCount, after: $postCursor, filterTypes: ["Action"])
+        posts(first: $postCount, after: $postCursor, filterTypes: ["Group"])
           @connection(key: "SolidarityPostViewFragment_posts") {
           __id
           edges {
@@ -148,7 +161,31 @@ export default function SolidarityPostView({
     post?.spaceReferenced ? post?.spaceReferenced : null,
   );
 
-  const connectionId = data?.posts?.__id;
+  const { data: postRelationData } = usePaginationFragment<
+    SolidarityPostViewRelationsPaginationQuery,
+    SolidarityPostViewRelationsFragment$key
+  >(
+    graphql`
+      fragment SolidarityPostViewRelationsFragment on Post
+      @refetchable(queryName: "SolidarityPostViewRelationsPaginationQuery") {
+        posts(
+          first: $postCount
+          after: $postCursor
+          filterTypes: ["Group", "Coalition"]
+        ) @connection(key: "SolidarityPostViewRelationsFragment_posts") {
+          __id
+          edges {
+            node {
+              ...PostListItemFragment
+            }
+          }
+        }
+      }
+    `,
+    post,
+  );
+
+  const connectionId = postRelationData?.posts?.__id;
   const connections =
     connectionId && connectionId.length > 0 ? [connectionId] : [];
 
@@ -314,136 +351,43 @@ export default function SolidarityPostView({
     onChange(post);
   };
 
-  const [commitCreateSpace] =
-    useMutation<SolidarityPostViewCreateSpaceMutation>(graphql`
-      mutation SolidarityPostViewCreateSpaceMutation(
-        $input: CreateSpaceInput!
-        $userCount: Int!
-        $userCursor: String
-        $postCount: Int!
-        $postCursor: String
-      ) {
-        createSpace(input: $input) {
-          spaceEdge {
-            node {
-              spaceId
-            }
-          }
-          referencingPost {
-            id
-            spaceReferencedId
-            spaceReferenced {
-              spaceId
-              name
-              ...SolidarityPostViewFragment
-            }
-          }
-        }
-      }
-    `);
-
-  const createGroup = () => {
-    commitCreateSpace({
-      variables: {
-        input: {
-          type: "Public",
-          accessType: "Open",
-          name: post!!.title!!,
-          profilepic: post?.icon,
-          bannerpic: post?.bannerpic,
-          createdFromPostId: post?.postId,
-        },
-        postCount: 1000,
-        userCount: 1000,
-      },
-    });
-  };
-
-  const [commitCreateAction] =
-    useMutation<SolidarityPostViewCreateActionMutation>(graphql`
-      mutation SolidarityPostViewCreateActionMutation(
-        $input: PostInput!
-        $connections: [ID!]!
-        $userCount: Int!
-        $userCursor: String
-      ) {
-        createPost(input: $input) {
-          postEdge @prependEdge(connections: $connections) {
-            node {
-              title
-              postId
-              type
-              body
-              delta
-              ...ActionItemFragment
-            }
-          }
-        }
-      }
-    `);
-
-  const [commitDeleteAction] =
-    useMutation<SolidarityPostViewDeleteActionMutation>(graphql`
-      mutation SolidarityPostViewDeleteActionMutation(
-        $input: DeletePostInput!
-        $connections: [ID!]!
-      ) {
-        deletePost(input: $input) {
-          deletedPostId @deleteEdge(connections: $connections)
-        }
-      }
-    `);
-
-  const createItem = (spaceId: number) => {
-    setState({
-      ...state,
-      newActionName: "",
-      creating: false,
-    });
-    commitCreateAction({
-      variables: {
-        input: {
-          type: "Action",
-          title: state.newActionName,
-          spaces: [{ spaceId, current: true }],
-          delta: JSON.stringify(state.content),
-        },
-        userCount: 10000,
-        connections: connectionId ? [connectionId] : [],
-      },
-    });
-  };
-
-  const createSolidarityAction = () => {
-    if (post?.spaceReferencedId) {
-      createItem(post?.spaceReferencedId);
-    } else {
-      commitCreateSpace({
-        variables: {
-          input: {
-            type: "Public",
-            accessType: "Open",
-            name: post!!.title!!,
-            profilepic: post?.icon,
-            bannerpic: post?.bannerpic,
-            createdFromPostId: post?.postId,
-          },
-          postCount: 1000,
-          userCount: 1000,
-        },
-        onCompleted: (response) => {
-          const spaceId = response.createSpace?.spaceEdge?.node?.spaceId;
-          spaceId && createItem(spaceId);
-        },
-      });
-    }
-  };
-
   const history = useHistory();
   const location = useLocation();
   let { tab } = queryString.parse(location.search);
 
-  tab = tab ? (tab as string) : "actions";
+  tab = tab ? (tab as string) : "groups";
+
+  const [commitDeleteRelation] =
+    useMutation<SolidarityPostViewDeleteRelationMutation>(graphql`
+      mutation SolidarityPostViewDeleteRelationMutation(
+        $input: DeleteRelationInput!
+        $connections: [ID!]!
+      ) {
+        deleteRelation(input: $input) {
+          deletedRelationId @deleteEdge(connections: $connections)
+        }
+      }
+    `);
+
+  const onRelatedEdge = (action: string, id: number, relationId?: number) => {
+    switch (action) {
+      case "Remove":
+        if (relationId) {
+          commitDeleteRelation({
+            variables: {
+              input: {
+                relationId,
+              },
+              connections,
+            },
+            onCompleted: () => {
+              onChange(post);
+            },
+          });
+        }
+        break;
+    }
+  };
 
   return (
     <div style={{ ...style, paddingLeft: 15, paddingRight: 15 }}>
@@ -499,7 +443,12 @@ export default function SolidarityPostView({
           )}
           <div>
             <GeneralTabs
-              tabs={["Actions", "Events", "Projects"].map((title) => ({
+              tabs={[
+                post?.type === "Coalition" ? "Groups" : "Coalitions",
+                "Actions",
+                "Events",
+                "Projects",
+              ].map((title) => ({
                 title,
                 value: title.toLocaleLowerCase(),
               }))}
@@ -512,6 +461,22 @@ export default function SolidarityPostView({
             />
 
             <Divider style={{ marginBottom: 10 }} />
+            {tab === "groups" && (
+              <div style={{ marginTop: 15 }}>
+                <ListItem primary={"Add Group"} {...addItemProps} />
+                {postRelationData?.posts?.edges?.map((edge) =>
+                  edge ? (
+                    <PostListItem
+                      post={edge?.node}
+                      menuOptions={[{ icon: <Remove />, name: "Remove" }]}
+                      onMenu={onRelatedEdge}
+                    />
+                  ) : (
+                    <span />
+                  ),
+                )}
+              </div>
+            )}
             {tab === "actions" && (
               <div style={{ marginTop: 15 }}>
                 <ListItem

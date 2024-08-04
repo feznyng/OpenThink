@@ -23,7 +23,7 @@ interface PostListItemProps {
   iconProps?: Partial<PostIconProps>;
   selected?: boolean;
   menuOptions?: { icon: ReactElement; name: string; tip?: string }[];
-  onMenu?: (name: string) => void;
+  onMenu?: (name: string, id: number, relationId?: number) => void;
 }
 
 export default function PostListItem({
@@ -35,13 +35,16 @@ export default function PostListItem({
   onClick,
   style,
 }: PostListItemProps) {
-  const { title, postId, space, ...data } = useFragment(
+  const { title, postId, space, parentRelation, ...data } = useFragment(
     graphql`
       fragment PostListItemFragment on Post {
         title
         postId
         space: spacePost(key: "PostListItem") {
           spaceId
+        }
+        parentRelation {
+          relationId
         }
         ...PostIconFragment
       }
@@ -103,7 +106,14 @@ export default function PostListItem({
               }}
             >
               {menuOptions.map(({ icon, name, tip }) => (
-                <MenuItem onClick={() => onMenu && onMenu(name)} key={name}>
+                <MenuItem
+                  onClick={() => {
+                    onMenu && onMenu(name, postId, parentRelation?.relationId);
+                    setAnchorEl(null);
+                    setHover(false);
+                  }}
+                  key={name}
+                >
                   <ListItemIcon>{icon}</ListItemIcon>
                   <ListItemText primary={name} secondary={tip} />
                 </MenuItem>
