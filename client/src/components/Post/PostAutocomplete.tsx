@@ -19,21 +19,25 @@ type Props = {
   placeholder: string;
   posts: any[];
   onChange: (post: any[]) => void;
+  multiple?: boolean;
+  style?: React.CSSProperties;
 };
 
 export default function PostAutocomplete({
   placeholder,
   posts,
   onChange,
+  multiple,
+  style,
 }: Props) {
   const classes = useStyles();
 
   console.log(posts);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={style}>
       <Autocomplete
-        multiple
+        multiple={multiple}
         options={posts}
         getOptionLabel={(option) => option.label}
         renderInput={(params) => (
@@ -55,7 +59,9 @@ export default function PostAutocomplete({
             {option.label}
           </React.Fragment>
         )}
-        onChange={(ev, val) => onChange(val)}
+        onChange={(ev, val) => {
+          onChange(multiple ? val : [val]);
+        }}
       />
     </div>
   );

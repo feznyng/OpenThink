@@ -199,10 +199,16 @@ export default function SolidarityMain({
 
               let size =
                 linkMap.get(post.postId.toString())?.length +
-                (isCoalition ? 25 : 0);
+                (isCoalition ? 10 : 0);
               size = size ? size : 1;
               node.val =
                 min && max && scaleNum(size, min, max, scaledMin, scaledMax);
+
+              console.log(
+                node.id,
+                scaleNum(size, min, max, scaledMin, scaledMax),
+              );
+
               nodeMap.set(post?.postId, node);
               return node;
             })

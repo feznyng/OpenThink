@@ -26,6 +26,7 @@ import { AddLink, People } from "@mui/icons-material";
 import PostAutocomplete from "../Post/PostAutocomplete";
 import { Node, Edge } from "./GraphView";
 import { GraphActionsCreateRelationMutation } from "./__generated__/GraphActionsCreateRelationMutation.graphql";
+import { parseInt } from "lodash";
 
 const actions = [
   {
@@ -85,9 +86,12 @@ export default function GraphActions({
   });
 
   const [coalitions, setCoalitions] = useState<string[]>([]);
+  const [groups, setGroups] = useState<string[]>([]);
 
   const fileRef = useRef();
   const menuAction = (e: MouseEvent, action: string) => {
+    setCoalitions([]);
+    setGroups([]);
     switch (action) {
       case "Import":
         (fileRef.current as any)?.click();
@@ -238,26 +242,25 @@ export default function GraphActions({
   );
 
   const createEdge = () => {
-    setState({ ...state, creatingType: -1, post1: "", post2: "" });
-    commitCreateEdge({
+    const postId = parseInt(groups[0]);
+    const parentPostId = parseInt(coalitions[0]);
+
+    if (!postId || !parentPostId) {
+      console.log("createEdge - id not valid canceling");
+      return;
+    }
+
+    commitCreateRelation({
       variables: {
         input: {
-          post1Title: state.post1,
-          post2Title: state.post2,
+          postId,
+          parentPostId,
           spaceId,
         },
       },
       onCompleted: (resp) => {
-        console.log("completed edge creation");
-        const relation = resp.createLink?.relation;
-        console.log(relation);
-        relation && onCreateEdge(relation as any);
-      },
-      onError: () => {
-        setState({
-          ...state,
-          message: "Could not find posts to relate with these names",
-        });
+        const post2Id = resp.createRelation?.postEdge?.node?.postId;
+        post2Id && onCreateEdge({ post1Id: parentPostId, post2Id: postId });
       },
     });
   };
@@ -333,16 +336,16 @@ export default function GraphActions({
       >
         <DialogTitle>Create Link</DialogTitle>
         <DialogContent>
-          <TextField
-            onChange={(e) => setState({ ...state, post1: e.target.value })}
-            placeholder="Coalition Name"
-            fullWidth
+          <PostAutocomplete
+            posts={nodes.filter(({ type }) => type === "Coalition")}
+            placeholder="Select Coalition"
+            onChange={(posts) => setCoalitions(posts.map(({ id }) => id))}
+            style={{ marginBottom: 10 }}
           />
-          <TextField
-            onChange={(e) => setState({ ...state, post2: e.target.value })}
-            placeholder="Group Name"
-            style={{ marginTop: 15 }}
-            fullWidth
+          <PostAutocomplete
+            posts={nodes.filter(({ type }) => type === "Group")}
+            placeholder="Select Group"
+            onChange={(posts) => setGroups(posts.map(({ id }) => id))}
           />
         </DialogContent>
         <DialogActions>
