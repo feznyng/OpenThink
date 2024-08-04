@@ -96,8 +96,6 @@ export default function SolidarityMain({
     queryRef,
   );
 
-  console.log(postGraph);
-
   const canImport = space?.permissions?.canImportPosts;
 
   const attributes = post?.attributes?.edges
@@ -203,7 +201,8 @@ export default function SolidarityMain({
                 linkMap.get(post.postId.toString())?.length +
                 (isCoalition ? 25 : 0);
               size = size ? size : 1;
-              node.val = undefined;
+              node.val =
+                min && max && scaleNum(size, min, max, scaledMin, scaledMax);
               nodeMap.set(post?.postId, node);
               return node;
             })
@@ -342,7 +341,6 @@ export default function SolidarityMain({
   };
 
   useMemo(() => {
-    console.log("filtering");
     toggleAttribute("");
   }, [nodes, links]);
 
@@ -400,6 +398,8 @@ export default function SolidarityMain({
               space={space}
               postId={parseInt(spacePage)}
               style={{ position: "absolute", bottom: 20, left: "50%" }}
+              nodes={nodes}
+              links={links}
             />
           )}
           <div style={{ position: "absolute", right: 20, bottom: 20 }}>

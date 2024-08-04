@@ -23,6 +23,9 @@ import TextField from "../Shared/TextField";
 import { GraphActionsCreateNodeMutation } from "./__generated__/GraphActionsCreateNodeMutation.graphql";
 import { GraphActionsCreateLinkMutation } from "./__generated__/GraphActionsCreateLinkMutation.graphql";
 import { AddLink, People } from "@mui/icons-material";
+import PostAutocomplete from "../Post/PostAutocomplete";
+import { Node, Edge } from "./GraphView";
+import { GraphActionsCreateRelationMutation } from "./__generated__/GraphActionsCreateRelationMutation.graphql";
 
 const actions = [
   {
@@ -51,6 +54,8 @@ interface GraphActionsProps {
   onCreateEdge: (edge: { post1Id: number; post2Id: number }) => void;
   onImport?: () => void;
   postId?: number;
+  nodes: Node[];
+  links: Edge[];
 }
 
 export default function GraphActions({
@@ -60,6 +65,7 @@ export default function GraphActions({
   postId,
   onCreateNode,
   onCreateEdge,
+  nodes,
 }: GraphActionsProps) {
   const { spaceId } = useFragment(
     graphql`
@@ -71,14 +77,14 @@ export default function GraphActions({
   );
 
   const [state, setState] = useState({
-    creatingGroup: false,
-    creatingCoalition: false,
-    creatingEdge: false,
+    creatingType: -1,
     nodeTitle: "",
     post1: "",
     post2: "",
     message: "",
   });
+
+  const [coalitions, setCoalitions] = useState<string[]>([]);
 
   const fileRef = useRef();
   const menuAction = (e: MouseEvent, action: string) => {
@@ -89,25 +95,19 @@ export default function GraphActions({
       case "Add Group":
         setState({
           ...state,
-          creatingEdge: false,
-          creatingGroup: true,
-          creatingCoalition: false,
+          creatingType: 0,
         });
         break;
       case "Add Coalition":
         setState({
           ...state,
-          creatingEdge: false,
-          creatingGroup: false,
-          creatingCoalition: true,
+          creatingType: 1,
         });
         break;
       case "Add Edge":
         setState({
           ...state,
-          creatingEdge: true,
-          creatingGroup: false,
-          creatingCoalition: false,
+          creatingType: 2,
         });
         break;
     }
@@ -157,18 +157,58 @@ export default function GraphActions({
     `,
   );
 
+  const [commitCreateRelation] =
+    useMutation<GraphActionsCreateRelationMutation>(graphql`
+      mutation GraphActionsCreateRelationMutation(
+        $input: CreateRelationInput!
+      ) {
+        createRelation(input: $input) {
+          postEdge {
+            node {
+              postId
+            }
+          }
+        }
+      }
+    `);
+
   const createNode = () => {
     commitCreateNode({
       variables: {
         input: {
           title: state.nodeTitle,
-          type: state.creatingGroup ? "Group" : "Coalition",
+          type: state.creatingType === 0 ? "Group" : "Coalition",
           spaces: [{ spaceId, current: true, parentPostId: postId }],
         },
       },
       onCompleted: (resp) => {
         const newPost = resp.createPost?.postEdge?.node;
-        newPost && onCreateNode(newPost);
+
+        if (!coalitions.length) {
+          newPost && onCreateNode(newPost);
+        }
+
+        coalitions.forEach((id, i) => {
+          console.log("creating link from", id, "to", newPost?.postId);
+          const parentPostId = parseInt(id);
+
+          commitCreateRelation({
+            variables: {
+              input: {
+                postId: newPost?.postId!!,
+                parentPostId,
+                spaceId,
+              },
+            },
+            onCompleted: (resp) => {
+              if (i === coalitions.length - 1) {
+                const post2Id = resp.createRelation?.postEdge?.node?.postId;
+                post2Id &&
+                  onCreateEdge({ post1Id: parentPostId, post2Id: post2Id });
+              }
+            },
+          });
+        });
       },
       onError: () => {
         setState({
@@ -179,8 +219,7 @@ export default function GraphActions({
     });
     setState({
       ...state,
-      creatingCoalition: false,
-      creatingGroup: false,
+      creatingType: -1,
       nodeTitle: "",
     });
   };
@@ -199,7 +238,7 @@ export default function GraphActions({
   );
 
   const createEdge = () => {
-    setState({ ...state, creatingEdge: false, post1: "", post2: "" });
+    setState({ ...state, creatingType: -1, post1: "", post2: "" });
     commitCreateEdge({
       variables: {
         input: {
@@ -248,18 +287,27 @@ export default function GraphActions({
         ))}
       </SpeedDial>
       <Dialog
-        open={state.creatingGroup || state.creatingCoalition}
-        onClose={() =>
-          setState({ ...state, creatingGroup: false, creatingCoalition: false })
-        }
+        open={state.creatingType === 0 || state.creatingType === 1}
+        onClose={() => setState({ ...state, creatingType: -1 })}
       >
         <DialogTitle>
-          Create {state.creatingGroup ? "Group" : "Coalition"}
+          Create {state.creatingType === 0 ? "Group" : "Coalition"}
         </DialogTitle>
         <DialogContent>
+          <div style={{ marginBottom: 15 }}>
+            {state.creatingType === 0 && (
+              <PostAutocomplete
+                posts={nodes.filter(({ type }) => type === "Coalition")}
+                placeholder="Select Coalitions"
+                onChange={(posts) => setCoalitions(posts.map(({ id }) => id))}
+              />
+            )}
+          </div>
           <TextField
             onChange={(e) => setState({ ...state, nodeTitle: e.target.value })}
-            placeholder={state.creatingGroup ? "Group Name" : "Coalition Name"}
+            placeholder={
+              state.creatingType === 0 ? "Group Name" : "Coalition Name"
+            }
             fullWidth
           />
         </DialogContent>
@@ -268,8 +316,7 @@ export default function GraphActions({
             onClick={() =>
               setState({
                 ...state,
-                creatingGroup: false,
-                creatingCoalition: false,
+                creatingType: -1,
               })
             }
           >
@@ -281,8 +328,8 @@ export default function GraphActions({
         </DialogActions>
       </Dialog>
       <Dialog
-        open={state.creatingEdge}
-        onClose={() => setState({ ...state, creatingEdge: false })}
+        open={state.creatingType === 2}
+        onClose={() => setState({ ...state, creatingType: -1 })}
       >
         <DialogTitle>Create Link</DialogTitle>
         <DialogContent>
@@ -299,7 +346,7 @@ export default function GraphActions({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setState({ ...state, creatingEdge: false })}>
+          <Button onClick={() => setState({ ...state, creatingType: -1 })}>
             Cancel
           </Button>
           <Button color="primary" variant="contained" onClick={createEdge}>

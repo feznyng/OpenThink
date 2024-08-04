@@ -607,17 +607,13 @@ defmodule OpenthinkBackendWeb.PostResolver do
           input: %{
             post_id: post_id,
             parent_post_id: parent_post_id,
-            space_id: space_id,
-            view_id: view_id,
-            index: index
+            space_id: space_id
           }
         },
         %{context: %{user_id: user_id}}
       ) do
-    case PostQueries.create_relation(parent_post_id, post_id, user_id, space_id,
-           view_id: view_id,
-           index: index
-         ) do
+        Logger.info("test")
+    case PostQueries.create_relation(parent_post_id, post_id, user_id, space_id) do
       {:ok, relation} ->
         {:ok,
          %{
@@ -629,6 +625,11 @@ defmodule OpenthinkBackendWeb.PostResolver do
       val ->
         val
     end
+  end
+
+  def create_relation(_root, _content, _context) do
+    Logger.info("test 2")
+    %{}
   end
 
   def create_link(

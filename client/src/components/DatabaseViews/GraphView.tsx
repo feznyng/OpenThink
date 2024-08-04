@@ -79,8 +79,6 @@ export default function GraphView({
   linkDistance = Math.max(nodes.length * 5, 40),
   hideImage,
 }: GraphViewProps) {
-  console.log(nodes, links);
-
   const ref = useRef();
   const theme = useTheme();
   const darkMode = theme.palette.type === "dark";
